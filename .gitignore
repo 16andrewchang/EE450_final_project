@@ -1,0 +1,18 @@
+# Build artifacts
+client
+monitor
+serverA
+serverB
+serverC
+serverM
+*.o
+*.exe
+
+# Runtime artifacts
+txlog.wal
+txchain.txt
+
+# Editor / OS
+.vscode/
+.claude/
+.DS_Store
