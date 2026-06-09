@@ -35,8 +35,8 @@ int main(int argc, char** argv) {
 
     printf("The monitor is up and running.\n");
     char req[MAXLINE];
-    if(argc==2 && strcmp(argv[1],"XOR")==0){
-        snprintf(req, sizeof(req), "TXLIST %s",argv[1]);
+    if(argc==3 && strcmp(argv[2],"XOR")==0){
+        snprintf(req, sizeof(req), "TXLIST %s",argv[2]);
     }
     else{
         snprintf(req, sizeof(req), "TXLIST");
