@@ -214,11 +214,10 @@ int main() {
                     perror("block1.txt append");
                 }
                 else {
-                    fout<< '\n'
-                        << serial << ' '
-                        << sender << ' '
-                        << receiver << ' '
-                        << std::to_string(amt);
+                    fout << serial << ' '
+                         << sender << ' '
+                         << receiver << ' '
+                         << std::to_string(amt) << '\n';
                     fout.flush();
                     fout.close();
                     txs.push_back(Tx{serial, sender, receiver, amt});

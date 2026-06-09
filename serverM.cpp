@@ -28,6 +28,7 @@
 
 int udpSock = -1;
 std::mutex udpMtx; // serializes one request/response cycle on udpSock
+std::mutex txMtx;  // serializes MAXID query + serial assignment + commit as one unit
 
 struct Tx
 {
@@ -388,6 +389,7 @@ void handle_client_request(int clientSock)
         }
         else
         {
+            std::lock_guard<std::mutex> lk(txMtx);
             int a = query_maxid(PORT_serverA);
             int b = query_maxid(PORT_serverB);
             int c = query_maxid(PORT_serverC);

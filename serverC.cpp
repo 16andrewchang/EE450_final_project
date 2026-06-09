@@ -177,7 +177,7 @@ int main() {
                }
                sendto(sockfd,payload.data(),payload.size(),MSG_CONFIRM,(const struct sockaddr *)&mainServAddr,len);
             }
-            printf("The ServerA finished sending the response to the Main Server.\n");
+            printf("The ServerC finished sending the response to the Main Server.\n");
         }
         else if(tok.size() == 5){
             int serial;
@@ -210,11 +210,10 @@ int main() {
                     perror("block3.txt append");
                 }
                 else {
-                    fout<< '\n'
-                        << serial << ' '
-                        << sender << ' '
-                        << receiver << ' '
-                        << std::to_string(amt);
+                    fout << serial << ' '
+                         << sender << ' '
+                         << receiver << ' '
+                         << std::to_string(amt) << '\n';
                     fout.flush();
                     fout.close();
                     txs.push_back(Tx{serial, sender, receiver, amt});
@@ -230,7 +229,7 @@ int main() {
             const char *err = "ERROR";
             sendto(sockfd, err, strlen(err), 0,
                    (sockaddr*)&mainServAddr, len);
-            fprintf(stderr, "ServerA: malformed request: %s\n", buffer);
+            fprintf(stderr, "ServerC: malformed request: %s\n", buffer);
         }
 
           
