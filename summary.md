@@ -1,4 +1,4 @@
-#Distributed Transaction System
+Distributed Transaction System
 
 ---
 
@@ -140,7 +140,7 @@ So random selection gives load balancing, and the loop gives fault tolerance —
 
 ---
 
-## Fault Tolerance — Idempotent Writes
+## Fault Tolerance 
 
 > "The system handles retries safely using serial IDs to prevent duplicate transactions."
 
@@ -183,3 +183,71 @@ The fix for fixed key:
       return key;
   }
 ```
+How to run:
+  # Clone or copy the project, then build
+  make
+
+  # Open 5 terminals (or use & to background):
+  ./serverA &
+  ./serverB &
+  ./serverC &
+  ./serverM &
+
+  # Test balance check
+  ./client Alice
+
+  # Test transfer
+  ./client Alice Bob 100
+
+  # Test XOR encryption mode
+  ./client Alice XOR
+  ./client Alice Bob 100 XOR
+
+  # Test monitor (creates txchain.txt)
+  ./monitor TXLIST
+
+## Socket Diagram
+
+```
+                    CLIENT PROCESS
+                   ┌─────────────┐
+                   │  sock (fd3) │
+                   │  TCP        │
+                   └──────┬──────┘
+                          │ connect to 25218
+                          │
+          ┌───────────────▼────────────────────────────┐
+          │              serverM PROCESS               │
+          │                                            │
+          │  clientListen (fd3)   monitorListen (fd4)  │
+          │  TCP port 25218       TCP port 26218        │
+          │         │                    │             │
+          │    accept()             accept()           │
+          │         │                    │             │
+          │  clientSock (fd6)     monSock (fd7)        │
+          │  TCP (per client)     TCP (per monitor)    │
+          │                                            │
+          │         udpSock (fd5)                      │
+          │         UDP port 24218                     │
+          │         (send + receive)                   │
+          └───────┬──────────┬──────────┬──────────────┘
+                  │          │          │
+          send to │  send to │  send to │
+          port    │  port    │  port    │
+          21218   │  22218   │  23218   │
+                  │          │          │
+     ┌────────────▼─┐ ┌──────▼───────┐ ┌▼─────────────┐
+     │   serverA    │ │   serverB    │ │   serverC    │
+     │  sockfd(fd3) │ │  sockfd(fd3) │ │  sockfd(fd3) │
+     │  UDP 21218   │ │  UDP 22218   │ │  UDP 23218   │
+     └──────────────┘ └──────────────┘ └──────────────┘
+
+                   MONITOR PROCESS
+                   ┌─────────────┐
+                   │  sock (fd3) │
+                   │  TCP        │
+                   └──────┬──────┘
+                          │ connect to 26218
+```
+
+Each process has its own fd table so fd3 in client, fd3 in serverA, fd3 in monitor are all independent.
